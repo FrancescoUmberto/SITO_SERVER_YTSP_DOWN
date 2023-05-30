@@ -1,0 +1,56 @@
+.title{
+    color: rgb(100, 98, 98);
+    display: flex;
+    justify-content: center;
+}
+a {
+    text-decoration: none;
+}
+a:visited {
+    color: rgb(100, 98, 98);
+}
+body{
+    background-color: #3ddc50;
+}
+.main{
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    flex-direction: column;
+    gap: 80px;
+}
+.m2{
+    background-color: #166818;
+    padding: 30px;
+    padding-top: 15px;
+    display: flex;
+    width: 200px;
+    align-items: center;
+    justify-content: start;
+    flex-direction: column;
+    border-radius: 10px;
+}
+.text-platform{
+    color: whitesmoke;
+}
+.buttonChoice{
+    display: flex;
+    justify-content: center;
+    font-size: 10px;
+    padding: 15px 15px;
+    width: 70px;
+    text-align: center;
+    cursor: pointer;
+    outline: none;
+    color: whitesmoke;
+    background-color: #179025;
+    border: none;
+    border-radius: 15px;
+    box-shadow: -1px 1px #999;
+}
+.buttons{
+    display: flex;
+    gap: 20px;
+}

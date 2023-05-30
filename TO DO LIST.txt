@@ -1,0 +1,5 @@
+
+
+1. CSS for spotDown
+2. In case of errors run this command: sudo npm i ytdl-core@https://github.com/GreepTheSheep/node-ytdl-core
+3. Se scarico highestvideo non mi da l'audio, allora è necessario scaricare audio e video separati e poi unirli insieme  
