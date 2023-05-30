@@ -50,8 +50,8 @@ app.post('/formSp', async(req, res)=>{
     res.setHeader('Content-disposition', 'attachment; filename=' + 'download.mp4');
     res.setHeader('Content-type', 'application/octet-stream');
     const link = req.body.link;
-    const songName = (await spdl.getInfo(link)).videoDetails.title;
-    console.log(songName);
+    spdl(link);
+
 
 })
 
