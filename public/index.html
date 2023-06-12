@@ -18,6 +18,21 @@
                 <a href="youtubeDown.html"><button class="buttonChoice">YouTube</button></a>
                 <a href="spotifyDown.html"><button class="buttonChoice">Spotify</button></a>
             </div>
+            <div class="formSongName">
+                <div class="formNameSong">
+                    <p class="titleForm">Oppure inserire il nome della canzone</p>
+                </div>
+                <form method="post" action="/downloadBySongName">
+                    <div class="inputSongNameDiv">
+                        <input type="text" name="songName" class="inputSongName"
+                            placeholder="nome della canzone (indicare anche l'artista)" required>
+                    </div>
+                    <div class="downloadButtonSongName">
+                        <button class="buttonDownloadSongName" type="submit" id="download"
+                            onclick="download()">Download</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </body>
