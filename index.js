@@ -57,8 +57,9 @@ app.post('/formSp', async (req, res) => {
     const songArtist = await getSongArtist(link);
     var songToSearch = songName + ' ' + songArtist + ' original video';
     const songLink = await searchSong(songToSearch);
+    const songNameOriginal = (await ytdl.getInfo(songLink)).videoDetails.title;
     console.log(`Link YT: ${songLink}`);
-    res.attachment(songToSearch + '.mp4');
+    res.attachment(songNameOriginal + '.mp4');
     ytdl(songLink, { filter: "audioonly" }).pipe(res);
 });
 //SONG NAME downloader
@@ -69,8 +70,9 @@ app.post('/downloadBySongName', async (req, res) => {
     const songName = req.body.songName;
     var songToSearch = songName  + ' original video';
     const songLink = await searchSong(songToSearch);
+    const songNameOriginal = (await ytdl.getInfo(songLink)).videoDetails.title;
     console.log(`Link YT: ${songLink}`);
-    res.attachment(songToSearch + '.mp4');
+    res.attachment(songNameOriginal + '.mp4');
     ytdl(songLink, { filter: "audioonly" }).pipe(res);
 });
 
