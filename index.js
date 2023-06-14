@@ -3,10 +3,7 @@ const app = express();
 import server, { get } from 'http';
 server.createServer(app);
 import path from 'path';
-import fs from 'fs';
 import ytdl from 'ytdl-core'
-const router = express.Router();
-import axios from 'axios';
 const host = 'localhost';
 const port = 5500;
 import { fileURLToPath } from 'url';
