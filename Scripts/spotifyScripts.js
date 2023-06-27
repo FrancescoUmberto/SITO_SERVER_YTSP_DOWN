@@ -1,12 +1,66 @@
 import axios from "axios";
+import spotifyWebApi from "spotify-web-api-node";
 
-
-
-
+//Spotify API
 const clientId = '331613cbcbb046d480cef166acd56e8c';
 const clientSecret = '04984055c5b74d71b814f5c469426af9';
-const redirectUri = 'http://localhost:5500';
+const spotifyApi = new spotifyWebApi({ clientId, clientSecret });
 
+
+
+//Potrebbe essere interessante
+// export function recognzieLink(link) {  
+//     if (link.includes('spotify')) {
+//         return 'spotify';
+//     } else if (link.includes('youtube')) {
+//         return 'youtube';
+//     } else {
+//         throw new Error('Invalid link');
+//     }
+// }
+
+//Function to recognize the type of the link
+export function recognzieSpotifyLink(link) {
+    const playlistRegex = /^https:\/\/open.spotify.com\/playlist\/([a-zA-Z0-9]+).*$/;
+    const trackRegex = /^https:\/\/open.spotify.com\/track\/([a-zA-Z0-9]+).*$/;
+
+    if (link.match(playlistRegex)) {
+        console.log('playlist');
+        return 'playlist';
+    }
+    else if (link.match(trackRegex)) {
+        console.log('track');
+        return 'track';
+    }
+    else {
+        throw new Error('Invalid link');
+
+    }
+}
+
+function getPlaylistIdFromLink(link) {
+    const match = link.match(/playlist\/([a-zA-Z0-9]+)/);
+    if (match && match[1]) {
+        return match[1];
+    }
+    throw new Error('Invalid playlist link');
+}
+export function getSongByPlaylist(link) {
+    const playlistId = getPlaylistIdFromLink(link);
+    spotifyApi.clientCredentialsGrant()
+        .then(data => {
+            spotifyApi.setAccessToken(data.body['access_token']);
+            return spotifyApi.getPlaylist(playlistId);
+        })
+        .then(data => {
+            const tracks = data.body.items;
+            const songNames = tracks.map(track => track.track.name);
+            consgole.log(`Song names: ${songNames}`);
+        })
+        .catch(error => {
+            console.log(error);
+        });
+}
 
 export async function getAccessToken() {
     try {
