@@ -11,22 +11,13 @@ function ytDownload() {
     }
   });
 }
-const outputFilePath = '/Users/umbertofrancescocarolini/Desktop/Programmazione/SITO_SERVER_YTSP_DOWN/';
-export async function downloadBySongName(songName) {
-  console.log(`Link YT: ${songLink}`);
-  res.attachment(songNameOriginal + '.mp3');
-  const stream = ytdl(songLink, { filter: "audioonly", quality: "highestaudio" })
-  const outputFilePathDown = outputFilePath + songNameOriginal + '.mp3';
-  ffmpeg(stream)
-    .audioCodec('libmp3lame')
-    .format('mp3')
-    .output(outputFilePathDown)
-    .on('end', () => {
-      console.log('Download and conversion completed!');
-    })
-    .on('error', (err) => console.error(err))
-    .save(outputFilePathDown)
-    return outputFilePathDown;  
+//Funzione per eliminare il file una volta scaricato
+export function deleteFile(outputFilePathDown) {
+  fs.unlink(outputFilePathDown, err => {
+    if (err) {
+      console.log(err);
+    }
+  });
 }
 
 //function ytDownload() {

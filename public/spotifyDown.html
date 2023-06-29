@@ -21,7 +21,7 @@
                             required autofocus>
                     </div>
                     <div class="buttons-sp">
-                        <button class="download" type="submit" id="download" onclick="download()">Download</button>     
+                        <button class="download" type="submit" id="download" onclick="download()">Download</button>
                     </div>
             </div>
         </div>
@@ -29,5 +29,28 @@
     </div>
 
 </body>
+
+<script>
+
+
+    const inputLink = document.getElementById("linkYoutube").addEventListener('focusout', (evt) => {
+
+        const playlistRegex = /^https:\/\/open.spotify.com\/playlist\/([a-zA-Z0-9]+).*$/;
+        const trackRegex = /^https:\/\/open.spotify.com\/track\/([a-zA-Z0-9]+).*$/;
+        const link = document.getElementById("linkYoutube").value;
+        var valid = false;
+        if (!(link == "")) {
+            if ((!link.match(playlistRegex) && !link.match(trackRegex))) {
+                alert("Link non valido");
+                valid = false;
+            }
+            else {
+                valid = true;
+            }
+
+        }
+    });
+
+</script>
 
 </html>

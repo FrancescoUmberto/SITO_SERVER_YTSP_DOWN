@@ -1,6 +1,7 @@
 import axios from "axios";
 import spotifyWebApi from "spotify-web-api-node";
 
+
 //Spotify API
 const clientId = '331613cbcbb046d480cef166acd56e8c';
 const clientSecret = '04984055c5b74d71b814f5c469426af9';
@@ -23,7 +24,7 @@ const spotifyApi = new spotifyWebApi({ clientId, clientSecret });
 export function recognzieSpotifyLink(link) {
     const playlistRegex = /^https:\/\/open.spotify.com\/playlist\/([a-zA-Z0-9]+).*$/;
     const trackRegex = /^https:\/\/open.spotify.com\/track\/([a-zA-Z0-9]+).*$/;
-
+    var valid = true;
     if (link.match(playlistRegex)) {
         console.log('playlist');
         return 'playlist';
@@ -33,8 +34,8 @@ export function recognzieSpotifyLink(link) {
         return 'track';
     }
     else {
+        valid = false;
         throw new Error('Invalid link');
-
     }
 }
 
@@ -74,7 +75,7 @@ export async function getAccessToken() {
             },
         });
         const accessToken = response.data.access_token;
-        console.log(`Access Token: ${accessToken}`);
+        // console.log(`Access Token: ${accessToken}`);
         return accessToken;
     } catch (error) {
         console.log(error);

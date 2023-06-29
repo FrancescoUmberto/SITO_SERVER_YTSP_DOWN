@@ -4,6 +4,15 @@ import axios from "axios";
 
 
 
+export async function linkValidator(link) {
+    const youtubeRegex = /^https?:\/\/(?:www\.)?youtube\.com\/watch\?(?=.*v=\w+)(?:\S+)?$/;
+    if (link.match(youtubeRegex)) {
+        console.log('youtube');
+    }
+    else {
+        throw new Error("Invalid link");
+    }
+}
 
 export async function searchSong(songName) {
     try {

@@ -15,20 +15,15 @@ import { recognzieSpotifyLink } from './Scripts/spotifyScripts.js';
 import { getSongByPlaylist } from './Scripts/spotifyScripts.js';
 import ffmpeg from 'fluent-ffmpeg';
 import ffmpegPath from 'ffmpeg-static';
-import { downloadBySongName } from './Scripts/script.js';
 import ffmetadata from 'ffmetadata';
-
+import { deleteFile } from './Scripts/script.js';
+import { linkValidator } from './Scripts/youtubeScripts.js';
 
 
 
 ffmpeg.setFfmpegPath(ffmpegPath);
 const __filename = fileURLToPath(import.meta.url);
 const outputFilePath = '/Users/umbertofrancescocarolini/Desktop/Programmazione/SITO_SERVER_YTSP_DOWN/';
-
-const __dirname = path.dirname(__filename);
-const clientId = '331613cbcbb046d480cef166acd56e8c';
-const redirectUri = 'http://localhost:5500/callback';
-
 app.use(express.json()); //Accept data in json format
 app.use(express.urlencoded()); //Decode the data send through html form
 app.use(express.static('public'));
@@ -38,52 +33,77 @@ app.use(express.static(path.join('public')));
 app.get((req, res) => {
     res.sendFile('/Users/umbertofrancescocarolini/Desktop/PROGRAMMAZIONE/SITO_SERVER_YTSP_DOWN/public/index.html');
 });
+app.get('/formSp', (req, res) => {
+    res.sendFile(path.join('/Users/umbertofrancescocarolini/Desktop/Programmazione/SITO_SERVER_YTSP_DOWN/public/spotifyDown.html'));
+});
+app.get('/formYt', (req, res) => {
+    res.sendFile(path.join('/Users/umbertofrancescocarolini/Desktop/Programmazione/SITO_SERVER_YTSP_DOWN/public/youtubeDown.html'));
+});
 //YT downloader
 app.post('/formYt', async (req, res) => {
     //Get the song's link of the request
     const link = req.body.link;
     //Get the song name by checking the link
-    const songName = (await ytdl.getInfo(link)).videoDetails.title;
-    res.setHeader('Content-disposition', 'attachment; filename=' + songName + '.mp3');
-    res.setHeader('Content-type', 'application/octet-stream');
-    const artist = (await ytdl.getInfo(songLink)).videoDetails.author.name;
-    res.attachment(songName + '.mp3')
-    //Download the song
-    const stream = ytdl(songLink, { filter: "audioonly", quality: "highestaudio" })
-    const outputFilePathDown = outputFilePath + songName + '.mp3';
-    ffmpeg(stream)
-        .audioCodec('libmp3lame')
-        .format('mp3')
-        .output(outputFilePathDown)
-        .on('end', () => {
-            const metadata = {
-                title: songName,
-                artist: artist
-            }
-            console.log('Download and conversion completed!');
-            ffmetadata.write(outputFilePathDown, metadata, function (err) {
-                if (err) {
-                    console.error('Error updating metadata:', err);
-                } else {
-                    console.log('Conversion complete');
+    try {
+        const songName = (await ytdl.getInfo(link)).videoDetails.title;
+        res.setHeader('Content-disposition', 'attachment; filename=' + songName + '.mp3');
+        res.setHeader('Content-type', 'application/octet-stream');
+        const artist = (await ytdl.getInfo(link)).videoDetails.author.name;
+        console.log(songName);
+        console.log(artist);
+        res.attachment(songName + '.mp3')
+        //Download the song
+        const stream = ytdl(link, { filter: "audioonly", quality: "highestaudio" })
+        const outputFilePathDown = outputFilePath + songName + '.mp3';
+        ffmpeg(stream)
+            .audioCodec('libmp3lame')
+            .format('mp3')
+            .output(outputFilePathDown)
+            .on('end', () => {
+                const metadata = {
+                    title: songName,
+                    artist: artist
                 }
-            });
-            setTimeout(() => {
-                res.download(outputFilePathDown);
-            }, 1500);
-        })
-        .on('error', (err) => console.error(err))
-        .save(outputFilePathDown)
+                console.log('Download and conversion completed!');
+                ffmetadata.write(outputFilePathDown, metadata, function (err) {
+                    if (err) {
+                        console.error('Error updating metadata:', err);
+                    } else {
+                        console.log('Metadata updated successfully!');
+                    }
+                });
+                setTimeout(() => {
+                    res.download(outputFilePathDown);
+                }, 1500);
+            })
+            .on('error', (err) => console.error(err))
+            .save(outputFilePathDown)
+        res.on('finish', () => {
+            deleteFile(outputFilePathDown);
+            console.log('File deleted');
+        });
+        return link;
+    } catch (error) {
+        res.redirect('/formYt');
+        console.log(error.message);
+    }
+
 });
+
 //SP downloader
 app.post('/formSp', async (req, res) => {
-    res.setHeader('Content-disposition', 'attachment; filename=' + 'download.mp4');
+    res.setHeader('Content-disposition', 'attachment; filename=' + 'download.mp3');
     res.setHeader('Content-type', 'application/octet-stream');
     //Get the song's link of the request
     const link = req.body.link;
     // const songName = await getSongName(link);
     getAccessToken();
-    var linkType = recognzieSpotifyLink(link);
+    try {
+        var linkType = recognzieSpotifyLink(link);
+    } catch (error) {
+        console.log(error.message);
+        res.redirect('/formSp');
+    }
     //Download by song's link
     if (linkType == 'track') {
         const songName = await getSongName(link);
@@ -112,7 +132,7 @@ app.post('/formSp', async (req, res) => {
                     if (err) {
                         console.error('Error updating metadata:', err);
                     } else {
-                        console.log('Conversion complete');
+                        console.log('Metadata updated successfully!');
                     }
                 });
                 setTimeout(() => {
@@ -121,12 +141,18 @@ app.post('/formSp', async (req, res) => {
             })
             .on('error', (err) => console.error(err))
             .save(outputFilePathDown)
+        res.on('finish', () => {
+            deleteFile(outputFilePathDown);
+            console.log('File deleted');
+        });
     }
     else if (linkType == 'playlist') {
         getSongByPlaylist(link);
 
     }
-
+    app.get('/downloadBySongName', async (req, res) => {
+        res.sendFile(path.join('/Users/umbertofrancescocarolini/Desktop/Programmazione/SITO_SERVER_YTSP_DOWN/public/index.html'));
+    });
 });
 //SONG NAME downloader
 app.post('/downloadBySongName', async (req, res) => {
@@ -157,7 +183,7 @@ app.post('/downloadBySongName', async (req, res) => {
                 if (err) {
                     console.error('Error updating metadata:', err);
                 } else {
-                    console.log('Conversion complete');
+                    console.log('Metadata updated successfully!');
                 }
             });
             setTimeout(() => {
@@ -166,6 +192,10 @@ app.post('/downloadBySongName', async (req, res) => {
         })
         .on('error', (err) => console.error(err))
         .save(outputFilePathDown)
+    res.on('finish', () => {
+        deleteFile(outputFilePathDown);
+        console.log('File deleted');
+    });
 });
 
 app.listen(port, () => {
